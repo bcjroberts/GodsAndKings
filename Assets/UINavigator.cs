@@ -30,6 +30,10 @@ public class UINavigator : MonoBehaviour {
                 break;
         }
     }
+    public void exitApp()
+    {
+        Application.Quit();
+    }
 	
 	
 }
