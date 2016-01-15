@@ -21,8 +21,8 @@ public class SectionData {
             valueArray = new float[dimensions + 1, dimensions + 1];
             fillArray(valueArray);
             //Now we need to actually calculate the block heights
-            for (int j = 0; j < blockData.GetLength(0) - 1; j++) {
-                for (int k = 0; k < blockData.GetLength(1) - 1; k++) {
+            for (int j = 0; j < valueArray.GetLength(0) - 1; j++) {
+                for (int k = 0; k < valueArray.GetLength(1) - 1; k++) {
                     BlockData bd = new BlockData((valueArray[j, k] + valueArray[j + 1, k] + valueArray[j, k + 1] + valueArray[j + 1, k + 1]) / 4f);
                     blockData[j, k] = bd;
                 }
@@ -31,8 +31,8 @@ public class SectionData {
             valueArray = new float[dimensions, dimensions];
             fillArray(valueArray);
             //Now we have the block heights, and can simply transfer them
-            for (int j = 0; j < blockData.GetLength(0); j++) {
-                for (int k = 0; k < blockData.GetLength(1); k++) {
+            for (int j = 0; j < valueArray.GetLength(0); j++) {
+                for (int k = 0; k < valueArray.GetLength(1); k++) {
                     BlockData bd = new BlockData(valueArray[j, k]);
                     blockData[j, k] = bd;
                 }
@@ -42,11 +42,11 @@ public class SectionData {
     }
     public void fillArray(float[,] array) {
         array[0, 0] = botLeft;
-        array[0, dimensions - 1] = topLeft;
-        array[dimensions - 1, 0] = botRight;
-        array[dimensions - 1, dimensions - 1] = topRight;
+        array[0, array.GetLength(1)-1] = topLeft;
+        array[array.GetLength(0) - 1, 0] = botRight;
+        array[array.GetLength(0) - 1, array.GetLength(1) - 1] = topRight;
 
-        calcValues(array, 0, 0, dimensions - 1, dimensions - 1);
+        calcValues(array, 0, 0, array.GetLength(0) - 1, array.GetLength(1) - 1);
 
         //Once the above finishes, return back up to the even and odd cases
 
@@ -59,19 +59,40 @@ public class SectionData {
         //Calculate values
         array[midx, midz] = (array[sx, sz] + array[sx, ez] + array[ex, ez] + array[ex, sz]) / 4f;
 
+        /*
         array[midx, sz] = (array[midx, midz] + array[sx, sz] + array[ex, sz]) / 3f;
         array[midx, ez] = (array[midx, midz] + array[sx, ez] + array[ex, ez]) / 3f;
         array[sx, midz] = (array[midx, midz] + array[sx, sz] + array[sx, ez]) / 3f;
         array[ex, midz] = (array[midx, midz] + array[ex, sz] + array[ex, ez]) / 3f;
+        */
+        array[midx, sz] = (array[sx, sz] + array[ex, sz]) / 2f;
+        array[midx, ez] = (array[sx, ez] + array[ex, ez]) / 2f;
+        array[sx, midz] = (array[sx, sz] + array[sx, ez]) / 2f;
+        array[ex, midz] = (array[ex, sz] + array[ex, ez]) / 2f;
+
 
         //Checks if complete. If so, return
-        if ((ex / 2) - 1 <= sx)
+        Debug.Log("("+sx+", " + sz + " ), (" + ex + ", " + ez + " ) " + ex + " : " + ((ex-sx)/2-1) + " ?= 0");
+        if (((ex-sx) / 2) - 1 <= 0)
             return;
 
         Debug.Log("Recursive!");
-        calcValues(array, sx, sz, ex / 2, ez / 2);
-        calcValues(array, ex / 2, ez / 2, ex, ez);
-        calcValues(array, sx, ez / 2, ex / 2, ez);
-        calcValues(array, ex / 2, sz, ex, ez / 2);
+        calcValues(array, sx, sz, midx, midz);
+        calcValues(array, midx, midz, ex, ez);
+        calcValues(array, sx, midz, midx, ez);
+        calcValues(array, midx, sz, ex, midz);
+    }
+    public void printSection() {
+        string data = "";
+        for (int j = 0; j < blockData.GetLength(0); j++) {
+            for (int k = 0; k < blockData.GetLength(1); k++) {
+                if (blockData[j, k] != null)
+                    data += blockData[j, k].height + ", ";
+                else
+                    data += "null, ";
+            }
+            data += "\n";
+        }
+        Debug.Log(data);
     }
 }

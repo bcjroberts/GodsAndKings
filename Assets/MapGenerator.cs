@@ -43,6 +43,7 @@ public class MapGenerator : MonoBehaviour {
                 botRight = -1;
 
                 if (j == 0 && k==0) {
+                    sectionMap[0, 0].printSection();
                     continue;
                 }
                 if (j == 0) {
