@@ -38,7 +38,7 @@ public class SectionData {
                 }
             }
         }
-        Debug.Log("Section Finished!");
+        //Debug.Log("Section Finished!");
     }
     public void fillArray(float[,] array) {
         array[0, 0] = botLeft;
@@ -72,11 +72,11 @@ public class SectionData {
 
 
         //Checks if complete. If so, return
-        Debug.Log("("+sx+", " + sz + " ), (" + ex + ", " + ez + " ) " + ex + " : " + ((ex-sx)/2-1) + " ?= 0");
+        //Debug.Log("("+sx+", " + sz + " ), (" + ex + ", " + ez + " ) " + ex + " : " + ((ex-sx)/2-1) + " ?= 0");
         if (((ex-sx) / 2) - 1 <= 0)
             return;
 
-        Debug.Log("Recursive!");
+        //Debug.Log("Recursive!");
         calcValues(array, sx, sz, midx, midz);
         calcValues(array, midx, midz, ex, ez);
         calcValues(array, sx, midz, midx, ez);
@@ -84,8 +84,8 @@ public class SectionData {
     }
     public void printSection() {
         string data = "";
-        for (int j = 0; j < blockData.GetLength(0); j++) {
-            for (int k = 0; k < blockData.GetLength(1); k++) {
+        for (int k = blockData.GetLength(1) - 1; k > -1; k--) {
+            for (int j = 0; j < blockData.GetLength(0); j++) {
                 if (blockData[j, k] != null)
                     data += blockData[j, k].height + ", ";
                 else

@@ -31,6 +31,13 @@ public class MapGenerator : MonoBehaviour {
         SectionGenerator sg = new SectionGenerator(sectionDim);
 
         sectionMap[0, 0] = sg.createSection(minHeight, maxHeight, heightDiff);
+        sectionMap[0, 0].printSection();
+
+        for (int l = 0; l < sectionDimensions; l++) {
+            for (int h = 0; h < sectionDimensions; h++) {
+                map[l,h] = sectionMap[0,0].blockData[l, h];
+            }
+        }
 
         float topLeft = -1;
         float botLeft = -1;
@@ -43,7 +50,6 @@ public class MapGenerator : MonoBehaviour {
                 botRight = -1;
 
                 if (j == 0 && k==0) {
-                    sectionMap[0, 0].printSection();
                     continue;
                 }
                 if (j == 0) {
@@ -58,10 +64,24 @@ public class MapGenerator : MonoBehaviour {
                     botRight = sectionMap[j, k - 1].topRight;
                 }
                 sectionMap[j, k] = sg.createSection(minHeight,maxHeight,heightDiff,topLeft,botLeft,botRight);
+                sectionMap[j, k].printSection();
+
+                for(int l = 0; l < sectionDimensions; l++) {
+                    for(int h = 0; h < sectionDimensions; h++) {
+                        map[j * sectionDimensions + l, k * sectionDimensions + h] = sectionMap[j, k].blockData[l, h];
+                    }
+                }
             }
         }
         Debug.Log("Done");
-
+        instantiateMap();
+    }
+    private void instantiateMap() {
+        for(int j = 0; j < map.GetLength(0); j++) {
+            for(int k = 0; k < map.GetLength(1); k++) {
+                Instantiate(Resources.Load("MapBlock"), new Vector3(j,map[j,k].height,k), Quaternion.identity);
+            }
+        }
     }
 	
 }
